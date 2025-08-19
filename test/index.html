@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tosti Maker - CD3 Leerlingen</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🥪 Tosti Maker</h1>
+            <div class="settings-button" id="settingsBtn" tabindex="0" role="button" aria-label="Instellingen">
+                ⚙️
+            </div>
+        </header>
+
+        <!-- Settings Panel -->
+        <div class="settings-panel" id="settingsPanel">
+            <h2>Instellingen</h2>
+            <div class="setting-group">
+                <label for="difficultySelect">Moeilijkheidsniveau:</label>
+                <select id="difficultySelect">
+                    <option value="easy">Eenvoudig (alleen plaatjes)</option>
+                    <option value="medium">Gemiddeld (plaatjes + woorden)</option>
+                    <option value="hard">Moeilijk (alleen woorden)</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label for="pictogramType">Type Pictogrammen:</label>
+                <select id="pictogramType">
+                    <option value="emoji">Emoji's</option>
+                    <option value="sclera">Sclera Pictogrammen</option>
+                    <option value="custom">Eigen Plaatjes</option>
+                </select>
+            </div>
+            <div class="setting-group" id="customPictogramsGroup" style="display: none;">
+                <label>Eigen Plaatjes Uploaden:</label>
+                <div class="upload-section">
+                    <input type="file" id="customPictogramUpload" accept="image/*" multiple>
+                    <button type="button" id="uploadBtn" class="upload-btn">Upload Plaatjes</button>
+                </div>
+                <div id="uploadedPictograms" class="uploaded-pictograms"></div>
+            </div>
+            <div class="setting-group">
+                <label for="audioToggle">Geluid aan/uit:</label>
+                <input type="checkbox" id="audioToggle" checked>
+            </div>
+            <button class="close-settings" id="closeSettings">Sluiten</button>
+        </div>
+
+        <!-- Main Menu -->
+        <main class="main-content" id="mainMenu">
+            <div class="game-selection">
+                <h2>Kies een spel:</h2>
+                <div class="game-buttons">
+                    <button class="game-btn" id="memoryBtn" tabindex="0">
+                        <span class="game-icon">🧠</span>
+                        <span class="game-title">Memory</span>
+                    </button>
+                    <button class="game-btn" id="dragBtn" tabindex="0">
+                        <span class="game-icon">🖱️</span>
+                        <span class="game-title">Sleepspel</span>
+                    </button>
+                    <button class="game-btn" id="tableBtn" tabindex="0">
+                        <span class="game-icon">🍽️</span>
+                        <span class="game-title">Tafel Dekken</span>
+                    </button>
+                    <button class="game-btn" id="tostiBtn" tabindex="0">
+                        <span class="game-icon">🥪</span>
+                        <span class="game-title">Tosti Maken</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Game Areas -->
+        <div class="game-area" id="memoryGame" style="display: none;">
+            <div class="game-header">
+                <h2>Memory Spel</h2>
+                <div class="progress-info">
+                    <span id="memoryProgress">0/6</span>
+                    <button class="back-btn" id="backToMenu">← Terug</button>
+                </div>
+            </div>
+            <div class="memory-grid" id="memoryGrid"></div>
+        </div>
+
+        <div class="game-area" id="dragGame" style="display: none;">
+            <div class="game-header">
+                <h2>Sleepspel</h2>
+                <div class="progress-info">
+                    <span id="dragProgress">0/5</span>
+                    <button class="back-btn" id="backToMenu2">← Terug</button>
+                </div>
+            </div>
+            <div class="drag-container">
+                <div class="drag-items" id="dragItems"></div>
+                <div class="drag-targets" id="dragTargets"></div>
+            </div>
+        </div>
+
+        <div class="game-area" id="tableGame" style="display: none;">
+            <div class="game-header">
+                <h2>Tafel Dekken</h2>
+                <div class="progress-info">
+                    <span id="tableProgress">0/4</span>
+                    <button class="back-btn" id="backToMenu3">← Terug</button>
+                </div>
+            </div>
+            <div class="table-container">
+                <div class="table-items" id="tableItems"></div>
+                <div class="table-surface" id="tableSurface"></div>
+            </div>
+        </div>
+
+        <div class="game-area" id="tostiGame" style="display: none;">
+            <div class="game-header">
+                <h2>Tosti Maken</h2>
+                <div class="progress-info">
+                    <span id="tostiProgress">0/6</span>
+                    <button class="back-btn" id="backToMenu4">← Terug</button>
+                </div>
+            </div>
+            <div class="tosti-container">
+                <div class="ingredients" id="ingredients"></div>
+                <div class="tosti-pan" id="tostiPan"></div>
+            </div>
+        </div>
+
+        <!-- Feedback Modal -->
+        <div class="feedback-modal" id="feedbackModal">
+            <div class="feedback-content">
+                <div class="feedback-icon" id="feedbackIcon">🎉</div>
+                <div class="feedback-text" id="feedbackText">Goed gedaan!</div>
+                <button class="feedback-btn" id="feedbackBtn">Doorgaan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

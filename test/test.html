@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tosti Maker - Test & Upload</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .test-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .pictogram-test {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .pictogram-item {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            background: #f9f9f9;
+        }
+        
+        .pictogram-item img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+        
+        .upload-section {
+            background: #e8f5e8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .upload-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .uploaded-pictograms {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .uploaded-item {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        
+        .uploaded-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+        
+        .remove-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        .remove-btn:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="header">
+            <h1>🥪 Tosti Maker - Test & Upload</h1>
+        </div>
+
+        <div class="test-section">
+            <h2>Pictogram Type Test</h2>
+            <p>Test hier de verschillende pictogram types:</p>
+            
+            <div class="setting-group">
+                <label for="testPictogramType">Type Pictogrammen:</label>
+                <select id="testPictogramType">
+                    <option value="emoji">Emoji's</option>
+                    <option value="sclera">Sclera Pictogrammen</option>
+                    <option value="custom">Eigen Plaatjes</option>
+                </select>
+            </div>
+            
+            <div class="pictogram-test" id="pictogramTest">
+                <!-- Pictogrammen worden hier dynamisch geladen -->
+            </div>
+        </div>
+
+        <div class="upload-section">
+            <h2>Eigen Pictogrammen Uploaden</h2>
+            <p>Upload hier je eigen plaatjes voor de woorden:</p>
+            
+            <div class="upload-controls">
+                <input type="file" id="testFileUpload" accept="image/*" multiple>
+                <button id="testUploadBtn" class="upload-btn">Upload Plaatjes</button>
+            </div>
+            
+            <div class="uploaded-pictograms" id="testUploadedPictograms">
+                <!-- Geüploade pictogrammen worden hier getoond -->
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h2>Beschikbare Woorden</h2>
+            <p>Deze woorden kunnen worden gebruikt:</p>
+            <ul id="wordList">
+                <!-- Woordenlijst wordt hier dynamisch geladen -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Test configuratie
+        const testConfig = {
+            pictogramType: 'emoji'
+        };
+
+        // Custom pictogrammen storage voor test
+        let testCustomPictograms = {};
+
+        // Sclera pictogrammen mapping
+        const scleraPictograms = {
+            bord: 'https://www.sclera.be/picto/overview/plate.png',
+            beker: 'https://www.sclera.be/picto/overview/cup.png',
+            vork: 'https://www.sclera.be/picto/overview/fork.png',
+            mes: 'https://www.sclera.be/picto/overview/knife.png',
+            boterham: 'https://www.sclera.be/picto/overview/bread.png',
+            boter: 'https://www.sclera.be/picto/overview/butter.png',
+            kaas: 'https://www.sclera.be/picto/overview/cheese.png',
+            'tosti ijzer': 'https://www.sclera.be/picto/overview/sandwich.png',
+            ham: 'https://www.sclera.be/picto/overview/meat.png',
+            melk: 'https://www.sclera.be/picto/overview/milk.png'
+        };
+
+        // Fallback emoji's
+        const fallbackEmojis = {
+            bord: '🍽️', beker: '🥤', vork: '🍴', mes: '🔪', boterham: '🍞',
+            boter: '🧈', kaas: '🧀', 'tosti ijzer': '🥪', ham: '🥓', melk: '🥛'
+        };
+
+        // Woordenlijst
+        const vocabulary = {
+            bord: { pictogram: scleraPictograms.bord, fallback: fallbackEmojis.bord, audio: 'bord' },
+            beker: { pictogram: scleraPictograms.beker, fallback: fallbackEmojis.beker, audio: 'beker' },
+            vork: { pictogram: scleraPictograms.vork, fallback: fallbackEmojis.vork, audio: 'vork' },
+            mes: { pictogram: scleraPictograms.mes, fallback: fallbackEmojis.mes, audio: 'mes' },
+            boterham: { pictogram: scleraPictograms.boterham, fallback: fallbackEmojis.boterham, audio: 'boterham' },
+            boter: { pictogram: scleraPictograms.boter, fallback: fallbackEmojis.boter, audio: 'boter' },
+            kaas: { pictogram: scleraPictograms.kaas, fallback: fallbackEmojis.kaas, audio: 'kaas' },
+            'tosti ijzer': { pictogram: scleraPictograms['tosti ijzer'], fallback: fallbackEmojis['tosti ijzer'], audio: 'tosti ijzer' },
+            ham: { pictogram: scleraPictograms.ham, fallback: fallbackEmojis.ham, audio: 'ham' },
+            melk: { pictogram: scleraPictograms.melk, fallback: fallbackEmojis.melk, audio: 'melk' }
+        };
+
+        // Functie om pictogram te maken
+        function createPictogram(word, type) {
+            const container = document.createElement('div');
+            container.className = 'pictogram-item';
+            
+            let pictogramElement;
+            
+            if (type === 'emoji') {
+                const emoji = document.createElement('span');
+                emoji.textContent = vocabulary[word].fallback;
+                emoji.style.fontSize = '3rem';
+                pictogramElement = emoji;
+            } else if (type === 'sclera') {
+                const img = document.createElement('img');
+                img.src = vocabulary[word].pictogram;
+                img.alt = word;
+                img.onerror = function() {
+                    this.style.display = 'none';
+                    const fallback = document.createElement('span');
+                    fallback.textContent = vocabulary[word].fallback;
+                    fallback.style.fontSize = '2rem';
+                    this.parentNode.appendChild(fallback);
+                };
+                pictogramElement = img;
+            } else if (type === 'custom') {
+                if (testCustomPictograms[word]) {
+                    const img = document.createElement('img');
+                    img.src = testCustomPictograms[word];
+                    img.alt = word;
+                    pictogramElement = img;
+                } else {
+                    const emoji = document.createElement('span');
+                    emoji.textContent = vocabulary[word].fallback;
+                    emoji.style.fontSize = '2rem';
+                    pictogramElement = emoji;
+                }
+            }
+            
+            const label = document.createElement('div');
+            label.textContent = word;
+            label.style.fontWeight = 'bold';
+            label.style.marginTop = '10px';
+            
+            container.appendChild(pictogramElement);
+            container.appendChild(label);
+            
+            return container;
+        }
+
+        // Functie om test pictogrammen bij te werken
+        function updateTestPictograms() {
+            const container = document.getElementById('pictogramTest');
+            container.innerHTML = '';
+            
+            Object.keys(vocabulary).forEach(word => {
+                const pictogram = createPictogram(word, testConfig.pictogramType);
+                container.appendChild(pictogram);
+            });
+        }
+
+        // Functie om geüploade pictogrammen bij te werken
+        function updateTestUploadedPictograms() {
+            const container = document.getElementById('testUploadedPictograms');
+            container.innerHTML = '';
+            
+            Object.keys(testCustomPictograms).forEach(word => {
+                const item = document.createElement('div');
+                item.className = 'uploaded-item';
+                
+                const img = document.createElement('img');
+                img.src = testCustomPictograms[word];
+                img.alt = word;
+                
+                const label = document.createElement('div');
+                label.textContent = word;
+                label.style.fontWeight = 'bold';
+                label.style.fontSize = '0.9rem';
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-btn';
+                removeBtn.textContent = 'Verwijderen';
+                removeBtn.onclick = () => {
+                    delete testCustomPictograms[word];
+                    updateTestUploadedPictograms();
+                    updateTestPictograms();
+                };
+                
+                item.appendChild(img);
+                item.appendChild(label);
+                item.appendChild(removeBtn);
+                container.appendChild(item);
+            });
+        }
+
+        // Functie om woordenlijst bij te werken
+        function updateWordList() {
+            const container = document.getElementById('wordList');
+            container.innerHTML = '';
+            
+            Object.keys(vocabulary).forEach(word => {
+                const li = document.createElement('li');
+                li.textContent = word;
+                li.style.margin = '5px 0';
+                li.style.padding = '5px';
+                li.style.backgroundColor = '#f0f0f0';
+                li.style.borderRadius = '5px';
+                container.appendChild(li);
+            });
+        }
+
+        // Event listeners
+        document.getElementById('testPictogramType').addEventListener('change', (e) => {
+            testConfig.pictogramType = e.target.value;
+            updateTestPictograms();
+        });
+
+        document.getElementById('testUploadBtn').addEventListener('click', () => {
+            const fileInput = document.getElementById('testFileUpload');
+            const files = fileInput.files;
+            
+            if (files.length === 0) {
+                alert('Selecteer eerst bestanden om te uploaden.');
+                return;
+            }
+            
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    alert(`Bestand ${file.name} is geen afbeelding.`);
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const word = prompt(`Voor welk woord is deze afbeelding (${file.name})?\n\nBeschikbare woorden: ${Object.keys(vocabulary).join(', ')}`);
+                    if (word && vocabulary[word]) {
+                        testCustomPictograms[word] = e.target.result;
+                        updateTestUploadedPictograms();
+                        updateTestPictograms();
+                    } else if (word) {
+                        alert(`Woord "${word}" bestaat niet in de woordenlijst.`);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            fileInput.value = '';
+        });
+
+        // Initialisatie
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTestPictograms();
+            updateWordList();
+        });
+    </script>
+</body>
+</html>
